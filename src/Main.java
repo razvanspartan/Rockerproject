@@ -25,6 +25,9 @@ public class Main {
         parserForPlanets.parseFileSolarSystem("/home/razvanspartan/IdeaProjects/Rocketproject/src/data/input/Solar_System_Data.txt", planetData, planets);
         parserForRocket.parseRocketFile("/home/razvanspartan/IdeaProjects/Rocketproject/src/data/input/Rocket_Data.txt",  rocket);
 
+        System.out.println(planetData.get("Earth").getAngularPosition(BigDecimal.valueOf(0)));
+        System.out.println(planetData.get("Earth").getAngularPosition(BigDecimal.valueOf(0)));
+
         System.out.println("Escape velocities for each planet: ");
         planetData.forEach((planetName, planet) -> System.out.println(planetName + " " + planet.getEscapeVelocity().divide(BigDecimal.valueOf(1000), MathContext.DECIMAL128).setScale(1,  RoundingMode.DOWN)+" km/s"));
         rocket.displayInfo();
@@ -45,7 +48,7 @@ public class Main {
         BigDecimal totalJourneyTime = service.getTotalJourneyTime(earth, mars, rocket);
         System.out.println("Total Journey Time: " + totalJourneyTime + " seconds");
 
-        System.out.println("Total Journey Time (formatted): " + service.getTimeinDaysMinutesSeconds(totalJourneyTime));
+        System.out.println("Total Journey Time (formatted): " + service.toStringGetTime(service.getTimeinDaysMinutesSeconds(totalJourneyTime)));
 
         BigDecimal distanceFromEarthAtAcc = service.getDistanceFromPlanetAtAccOrDeacc(earth, mars, rocket);
         System.out.println("Distance from Earth at acceleration: " + distanceFromEarthAtAcc + " meters");
@@ -54,12 +57,16 @@ public class Main {
         System.out.println("Distance from Mars at deceleration: " + distanceFromMarsAtDeacc + " meters");
 
         System.out.println(service.convertRadiansToDegrees(earth.getAngularPosition(BigDecimal.valueOf(100).multiply(DAYS_IN_A_YEAR))).setScale(2,RoundingMode.HALF_UP));
-        System.out.println(service.closestTimeToAlignAfterSomeTime(earth,mars,BigDecimal.valueOf(100)).divide(DAYS_IN_A_YEAR, MathContext.DECIMAL128).setScale(2,RoundingMode.HALF_UP));
+        System.out.println(service.convertRadiansToDegrees(mars.getAngularPosition(BigDecimal.valueOf(100).multiply(DAYS_IN_A_YEAR))).setScale(2,RoundingMode.HALF_UP));
 
-        planets.forEach(planet -> System.out.println(planet.getName()));
+        System.out.println(service.closestTimeToAlignAfterSomeTime(earth,mars,BigDecimal.valueOf(100)).divide(DAYS_IN_A_YEAR, MathContext.DECIMAL128).setScale(2,RoundingMode.HALF_UP));
+        System.out.println(service.closestTimeToAlignAfterSomeTime(planetData.get("Earth"), planetData.get("Mars"), BigDecimal.valueOf(100)).divide(DAYS_IN_A_YEAR, MathContext.DECIMAL128).setScale(2,RoundingMode.HALF_UP));
         System.out.println(service.collisionCheckerSolarSystemNotMoving(planetData.get("Earth"), planetData.get("Uranus"), service.closestTimeToAlignAfterSomeTime(planetData.get("Earth"), planetData.get("Uranus"), BigDecimal.valueOf(100).multiply(DAYS_IN_A_YEAR)), planets));
-        System.out.println("STOPPP!!! \n \n");
-        System.out.println(service.collisionCheckerSolarSystemNotMoving(planetData.get("Earth"), planetData.get("Uranus"), BigDecimal.valueOf(2), planets));
+        //System.out.println("STOPPP!!! \n \n");
+        //System.out.println(service.collisionCheckerSolarSystemNotMoving(planetData.get("Earth"), planetData.get("Uranus"), BigDecimal.valueOf(0.6), planets));
+        //System.out.println("Wait \n");
+        //System.out.println(service.collisionCheckerSolarSystemMoving(planetData.get("Earth"), planetData.get("Uranus"), BigDecimal.valueOf(100), planets, rocket));
+
 
     }// /home/razvanspartan/IdeaProjects/Rocketproject/src/data/input/Planetary_Data.txt
    // "/home/razvanspartan/IdeaProjects/Rocketproject/src/data/input/Solar_System_Data.txt"
