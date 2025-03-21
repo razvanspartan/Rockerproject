@@ -59,9 +59,9 @@ public class Main {
         System.out.println(service.convertRadiansToDegrees(earth.getAngularPosition(BigDecimal.valueOf(100).multiply(DAYS_IN_A_YEAR))).setScale(2,RoundingMode.HALF_UP));
         System.out.println(service.convertRadiansToDegrees(mars.getAngularPosition(BigDecimal.valueOf(100).multiply(DAYS_IN_A_YEAR))).setScale(2,RoundingMode.HALF_UP));
 
-        System.out.println(service.closestTimeToAlignAfterSomeTime(earth,mars,BigDecimal.valueOf(100)).divide(DAYS_IN_A_YEAR, MathContext.DECIMAL128).setScale(2,RoundingMode.HALF_UP));
-        System.out.println(service.closestTimeToAlignAfterSomeTime(planetData.get("Earth"), planetData.get("Mars"), BigDecimal.valueOf(100)).divide(DAYS_IN_A_YEAR, MathContext.DECIMAL128).setScale(2,RoundingMode.HALF_UP));
-        System.out.println(service.collisionCheckerSolarSystemNotMoving(planetData.get("Earth"), planetData.get("Uranus"), service.closestTimeToAlignAfterSomeTime(planetData.get("Earth"), planetData.get("Uranus"), BigDecimal.valueOf(100).multiply(DAYS_IN_A_YEAR)), planets));
+        System.out.println(service.closestTimeToAlignAfterSomeTime(earth,mars,BigDecimal.valueOf(100)));
+        System.out.println(service.closestTimeToAlignAfterSomeTime(planetData.get("Mercury"), planetData.get("Venus"), BigDecimal.valueOf(100)));
+        System.out.println(service.collisionCheckerSolarSystemNotMoving(planetData.get("Earth"), planetData.get("Mercury"), service.closestTimeToAlignAfterSomeTime(planetData.get("Earth"), planetData.get("Mercury"), BigDecimal.valueOf(100).multiply(DAYS_IN_A_YEAR)), planets));
         //System.out.println("STOPPP!!! \n \n");
         //System.out.println(service.collisionCheckerSolarSystemNotMoving(planetData.get("Earth"), planetData.get("Uranus"), BigDecimal.valueOf(0.6), planets));
         //System.out.println("Wait \n");
