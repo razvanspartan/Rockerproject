@@ -3,6 +3,9 @@ package models.Celestials;
 import models.Celestials.CelestialUtils.PlanetCalculations;
 
 import java.math.BigDecimal;
+import java.util.List;
+
+import static CONSTANTS.Constants.AU_VALUE;
 
 public class Planet extends CelestialBodyAbstract{
     PlanetCalculations  planetCalculations = new PlanetCalculations();
@@ -20,6 +23,9 @@ public class Planet extends CelestialBodyAbstract{
     }
     public BigDecimal getAngularPosition(BigDecimal time){
         return planetCalculations.getAngularPosition(BigDecimal.valueOf(this.period), time );
+    }
+    public List<Double> getCoordinates(BigDecimal time){
+        return planetCalculations.getCoordinates(getAngularPosition(time), BigDecimal.valueOf(this.orbitalRadius).multiply(AU_VALUE));
     }
     @Override
     public void displayInfo() {

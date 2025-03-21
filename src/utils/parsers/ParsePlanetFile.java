@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,7 +47,7 @@ public class ParsePlanetFile {
                 System.out.println(e.getMessage());
             }
     }
-    public void parseFileSolarSystem(String fileName, Map<String, Planet> planets){
+    public void parseFileSolarSystem(String fileName, Map<String, Planet> planets, List<Planet> planetList){
         try(BufferedReader br = new BufferedReader(new FileReader(fileName))){
             String line;
 
@@ -59,6 +60,7 @@ public class ParsePlanetFile {
                 Planet currentPlanet = planets.get(planetName);
                 currentPlanet.setPeriod(period);
                 currentPlanet.setOrbitalRadius(orbitalRadius);
+                planetList.add(currentPlanet);
             }
         }catch (Exception e){
             System.out.println(e.getMessage());
