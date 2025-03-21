@@ -1,0 +1,11 @@
+/home/razvanspartan/IdeaProjects/Rocketproject/src/main/java/com/example/models/Rocket.java
+/home/razvanspartan/IdeaProjects/Rocketproject/src/main/java/com/example/models/RocketUtils/RocketCalculations.java
+/home/razvanspartan/IdeaProjects/Rocketproject/src/main/java/com/example/models/Celestials/CelestialBodyAbstract.java
+/home/razvanspartan/IdeaProjects/Rocketproject/src/main/java/com/example/parsers/ParseRocketFile.java
+/home/razvanspartan/IdeaProjects/Rocketproject/src/main/java/com/example/models/Celestials/Planet.java
+/home/razvanspartan/IdeaProjects/Rocketproject/src/main/java/com/example/parsers/ParserInterface.java
+/home/razvanspartan/IdeaProjects/Rocketproject/src/main/java/com/example/CONSTANTS/Constants.java
+/home/razvanspartan/IdeaProjects/Rocketproject/src/main/java/com/example/Main.java
+/home/razvanspartan/IdeaProjects/Rocketproject/src/main/java/com/example/models/Celestials/CelestialUtils/PlanetCalculations.java
+/home/razvanspartan/IdeaProjects/Rocketproject/src/main/java/com/example/Service/ServiceForCalculations.java
+/home/razvanspartan/IdeaProjects/Rocketproject/src/main/java/com/example/parsers/ParsePlanetFile.java
