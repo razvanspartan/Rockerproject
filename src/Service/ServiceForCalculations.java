@@ -37,7 +37,7 @@ public class ServiceForCalculations {
     }
     public boolean collisionCheckerSolarSystemMoving (Planet startingPlanet, Planet destinationPlanet,BigDecimal time, List<Planet> planetList, Rocket rocket){
         if(planetList.indexOf(startingPlanet) > planetList.indexOf(destinationPlanet)){
-            collisionCheckerSolarSystemNotMoving(destinationPlanet, startingPlanet, time, planetList);
+            return collisionCheckerSolarSystemNotMoving(destinationPlanet, startingPlanet, time, planetList);
         }
         for(int i = planetList.indexOf(startingPlanet)+1; i < planetList.indexOf(destinationPlanet); i++){
             System.out.println(planetList.get(i).getName() + " " + willCollide(startingPlanet, planetList.get(i), destinationPlanet, time));
@@ -55,19 +55,35 @@ public class ServiceForCalculations {
         BigDecimal startingPlanetPeriod = BigDecimal.valueOf(startingPlanet.getPeriod());
         BigDecimal destinationPlanetPeriod = BigDecimal.valueOf(destinationPlanet.getPeriod());
         return startingPlanetPeriod.multiply(destinationPlanetPeriod)
-                .divide((startingPlanetPeriod.subtract(destinationPlanetPeriod)).abs(), MathContext.DECIMAL128);
+                .divide((startingPlanetPeriod.subtract(destinationPlanetPeriod)).abs(), MathContext.DECIMAL128).divide(DAYS_IN_A_YEAR, MathContext.DECIMAL128);
     }
     //time is sent in years, returned in days
     public BigDecimal numberOfAllingmentsByATime(Planet startingPlanet, Planet destinationPlanet,  BigDecimal time){
         return time.multiply(DAYS_IN_A_YEAR).divide(timeToAlign(startingPlanet, destinationPlanet), MathContext.DECIMAL128);
     }
-    public BigDecimal closestTimeToAlignAfterSomeTime(Planet startingPlanet, Planet destinationPlanet, BigDecimal time){
-        BigDecimal numberOfAlignments = numberOfAllingmentsByATime(startingPlanet, destinationPlanet, time);
-        if(numberOfAlignments.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0){
-                return time;
+    public BigDecimal closestTimeToAlignAfterSomeTime(Planet startingPlanet, Planet destinationPlanet, BigDecimal time) {
+        // Calculate the synodic period (time between alignments)
+        BigDecimal timeToAlign = timeToAlign(startingPlanet, destinationPlanet);
+
+        // Check if timeToAlign is valid (not zero)
+        if (timeToAlign.compareTo(BigDecimal.ZERO) == 0) {
+            throw new IllegalArgumentException("timeToAlign cannot be zero.");
         }
-        else {
-            return time.add(timeToAlign(startingPlanet, destinationPlanet).multiply(numberOfAlignments));
+
+        // Calculate the number of full alignments that have occurred by the given time
+        BigDecimal numberOfAlignments = time.divide(timeToAlign, MathContext.DECIMAL128);
+
+        // Calculate the time of the last alignment
+        BigDecimal lastAlignmentTime = timeToAlign.multiply(numberOfAlignments.setScale(0, RoundingMode.FLOOR));
+
+        // Calculate the next alignment time
+        BigDecimal nextAlignmentTime = lastAlignmentTime.add(timeToAlign);
+
+        // Check if the next alignment time is within 10 years of the given time
+        if (nextAlignmentTime.compareTo(time.add(BigDecimal.TEN)) > 0) {
+            return BigDecimal.valueOf(-1); // No alignment within 10 years
+        } else {
+            return nextAlignmentTime;
         }
     }
     public BigDecimal convertRadiansToDegrees(BigDecimal radians){
