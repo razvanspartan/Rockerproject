@@ -1,5 +1,6 @@
 ### IntelliJ IDEA ###
 
+
 ### Eclipse ###
 .apt_generated
 .classpath
@@ -24,3 +25,5 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+src/token.txt
