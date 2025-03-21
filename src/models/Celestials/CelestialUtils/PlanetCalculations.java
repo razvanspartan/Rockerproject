@@ -30,13 +30,21 @@ public class PlanetCalculations {
 
     //getangular position returns position in rads
     public BigDecimal getAngularPosition(BigDecimal period, BigDecimal time){
-        BigDecimal angularPos = (getAngularVelocity(period).multiply(time)).setScale(2, RoundingMode.HALF_UP);
-        return angularPos.remainder(BigDecimal.valueOf(Math.PI*2)).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal angularVelocity = getAngularVelocity(period);
+        BigDecimal angularPos = angularVelocity.multiply(time).setScale(15, RoundingMode.HALF_UP);
+        angularPos = angularPos.remainder(BigDecimal.valueOf(Math.PI * 2)).setScale(2, RoundingMode.HALF_UP);
+        return angularPos;
     }
     public List<Double> getCoordinates(BigDecimal angularPosition, BigDecimal orbitalRadius){
         List<Double> coordinates = new ArrayList<>();
-        coordinates.add(BigDecimal.valueOf(Math.cos(angularPosition.doubleValue())).multiply(orbitalRadius).doubleValue());
-        coordinates.add(BigDecimal.valueOf(Math.sin(angularPosition.doubleValue())).multiply(orbitalRadius).doubleValue());
+        BigDecimal x = BigDecimal.valueOf(Math.cos(angularPosition.doubleValue()))
+                .multiply(orbitalRadius)
+                .setScale(3, RoundingMode.HALF_UP);
+        BigDecimal y = BigDecimal.valueOf(Math.sin(angularPosition.doubleValue()))
+                .multiply(orbitalRadius)
+                .setScale(3, RoundingMode.HALF_UP);
+        coordinates.add(x.doubleValue());
+        coordinates.add(y.doubleValue());
         return coordinates;
     }
 
