@@ -6,8 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="Rocketproject" />
+        <module name="RocketProject" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="Rocketproject" target="24" />
+    </bytecodeTargetLevel>
   </component>
 </project>

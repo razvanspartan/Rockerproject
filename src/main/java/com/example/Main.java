@@ -17,9 +17,9 @@ import java.util.*;
 import static com.example.CONSTANTS.Constants.DAYS_IN_A_YEAR;
 
 public class Main {
-    public static void main(String[] args) {
-        Application.launch(App.class, args);
-        /*Map<String, Planet> planetData = new HashMap<String, Planet>();
+    public static void main(String[] args) throws Exception {
+
+        Map<String, Planet> planetData = new HashMap<String, Planet>();
         List<Planet> planets = new ArrayList<Planet>();
 
         ServiceForCalculations service = new ServiceForCalculations();
@@ -70,8 +70,7 @@ public class Main {
         System.out.println(earth.getEscapeVelocity());
         System.out.println(earth.getPeriod());
         System.out.println(earth.getAngularVelocity());
-        App application = new App();
-        App.launch();*/
+        Application.launch(App.class, args);
 
 
             //System.out.println("STOPPP!!! \n \n");

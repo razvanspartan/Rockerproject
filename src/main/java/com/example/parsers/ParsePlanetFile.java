@@ -3,6 +3,7 @@ package com.example.parsers;
 import com.example.models.Celestials.Planet;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.math.BigDecimal;
 import java.util.List;
@@ -20,8 +21,8 @@ public class ParsePlanetFile {
         Matcher matcher = pattern.matcher(line);
         return matcher.matches();
     };
-    public void  parseFilePlanet(String fileName, Map<String, Planet> planets){
-            try(BufferedReader br = new BufferedReader(new FileReader(fileName))){
+    public void  parseFilePlanet(String fileName, Map<String, Planet> planets) throws Exception {
+            BufferedReader br = new BufferedReader(new FileReader(fileName));
                 String line;
 
                 while((line=br.readLine())!=null) {
@@ -42,9 +43,6 @@ public class ParsePlanetFile {
                     Planet newPlanet = new Planet(planetName, diameterinkm.multiply(BigDecimal.valueOf(Math.pow(10,3))), mass, 0, 0);
                     planets.put(planetName, newPlanet);
                 }
-            }catch (Exception e){
-                System.out.println(e.getMessage());
-            }
     }
     public void parseFileSolarSystem(String fileName, Map<String, Planet> planets, List<Planet> planetList){
         try(BufferedReader br = new BufferedReader(new FileReader(fileName))){

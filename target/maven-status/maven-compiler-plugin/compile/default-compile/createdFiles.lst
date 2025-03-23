@@ -1,12 +1,12 @@
 com/example/Service/ServiceForCalculations.class
 com/example/models/Celestials/Planet.class
+com/example/models/RocketUtils/RocketCalculations.class
+com/example/models/Celestials/CelestialBodyAbstract.class
+com/example/models/Rocket.class
 com/example/models/Celestials/CelestialUtils/PlanetCalculations.class
 com/example/view/App.class
 com/example/CONSTANTS/Constants.class
-com/example/models/RocketUtils/RocketCalculations.class
 com/example/parsers/ParseRocketFile.class
-com/example/models/Celestials/CelestialBodyAbstract.class
 com/example/Main.class
-com/example/models/Rocket.class
 com/example/parsers/ParsePlanetFile.class
 com/example/parsers/ParserInterface.class
