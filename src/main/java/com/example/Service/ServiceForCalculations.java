@@ -42,7 +42,7 @@ public class ServiceForCalculations {
         for(int i = planetList.indexOf(startingPlanet)+1; i < planetList.indexOf(destinationPlanet); i++){
             System.out.println(planetList.get(i).getName() + " " + willCollide(startingPlanet, planetList.get(i), destinationPlanet, time));
             if(willCollide(startingPlanet, planetList.get(i), destinationPlanet,
-                    (getJourneyTimeAtCruisingVelocity(startingPlanet, destinationPlanet, rocket).add(rocket.getTimeToReachEscapeVelocity(getCruisingSpeed(startingPlanet, destinationPlanet))
+                    (getJourneyTimeAtCruisingVelocity(startingPlanet, destinationPlanet, rocket, getCruisingSpeed(startingPlanet,destinationPlanet)).add(rocket.getTimeToReachEscapeVelocity(getCruisingSpeed(startingPlanet, destinationPlanet))
                             .divide(SECONDS_IN_A_DAY, MathContext.DECIMAL128)
                             .setScale(2, RoundingMode.HALF_UP))))){
                 return false;
@@ -102,19 +102,22 @@ public class ServiceForCalculations {
     public BigDecimal getCruisingSpeed(Planet startingPlanet,  Planet destinationPlanet) {
         return startingPlanet.getEscapeVelocity().compareTo(destinationPlanet.getEscapeVelocity()) == 1 ? startingPlanet.getEscapeVelocity() : destinationPlanet.getEscapeVelocity();
     }
-    public BigDecimal getCruisingDistance(Planet startingPlanet, Planet destinationPlanet, Rocket rocket) {
-        BigDecimal cruisingVelocity = getCruisingSpeed(startingPlanet, destinationPlanet);
+    //curising Velocity is an optional parameter
+    public BigDecimal getCruisingDistance(Planet startingPlanet, Planet destinationPlanet, Rocket rocket, BigDecimal cruisingVelocity) {
+        if(cruisingVelocity == null) {
+            cruisingVelocity = getCruisingSpeed(startingPlanet, destinationPlanet);
+        }
         BigDecimal distanceToAccelerateOrDeaccelerate = rocket.getDistanceToReachEscapeVelocity(cruisingVelocity);
         BigDecimal distanceBetweenPlanets = BigDecimal.valueOf(Math.abs(startingPlanet.getOrbitalRadius()-destinationPlanet.getOrbitalRadius())).multiply(AU_VALUE);
         return distanceBetweenPlanets.subtract(distanceToAccelerateOrDeaccelerate.multiply(BigDecimal.valueOf(2)))
                 .subtract(startingPlanet.getRadius())
                 .subtract(destinationPlanet.getRadius());
     }
-    public BigDecimal getJourneyTimeAtCruisingVelocity(Planet startingPlanet, Planet destinationPlanet, Rocket rocket) {
-        return getCruisingDistance(startingPlanet, destinationPlanet, rocket).divide(getCruisingSpeed(startingPlanet, destinationPlanet), MathContext.DECIMAL128);
+    public BigDecimal getJourneyTimeAtCruisingVelocity(Planet startingPlanet, Planet destinationPlanet, Rocket rocket, BigDecimal cruisingVelocity) {
+        return getCruisingDistance(startingPlanet, destinationPlanet, rocket, cruisingVelocity).divide(getCruisingSpeed(startingPlanet, destinationPlanet), MathContext.DECIMAL128);
     }
-    public BigDecimal getTotalJourneyTime(Planet startingPlanet, Planet destinationPlanet, Rocket rocket) {
-        return getJourneyTimeAtCruisingVelocity(startingPlanet, destinationPlanet, rocket)
+    public BigDecimal getTotalJourneyTime(Planet startingPlanet, Planet destinationPlanet, Rocket rocket, BigDecimal cruisingVelocity) {
+        return getJourneyTimeAtCruisingVelocity(startingPlanet, destinationPlanet, rocket, cruisingVelocity)
                 .add(rocket.getTimeToReachEscapeVelocity(getCruisingSpeed(startingPlanet, destinationPlanet)).multiply(BigDecimal.valueOf(2)));
     }
     public BigDecimal getDistanceFromPlanetAtAccOrDeacc(Planet targetPlanet, Planet otherPlanet, Rocket rocket){

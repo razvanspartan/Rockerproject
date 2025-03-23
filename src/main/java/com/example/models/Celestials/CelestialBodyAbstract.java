@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public abstract class CelestialBodyAbstract {
     String name;
-    BigDecimal diameter; //km
+    BigDecimal diameter; //meters
     BigDecimal mass; // kg
     int period; // days
     double orbitalRadius; // AU

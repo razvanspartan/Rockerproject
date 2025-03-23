@@ -8,33 +8,42 @@
     <artifactId>RocketProject</artifactId>
     <version>1.0-SNAPSHOT</version>
 
+    <properties>
+        <javafx.version>21</javafx.version>
+    </properties>
+
     <!-- Project Dependencies -->
     <dependencies>
-        <!-- JUnit 5 BOM (Bill of Materials) -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+
+        <!-- JUnit 5 Dependencies for Tests -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.9.0</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- JUnit 5 API -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>5.8.0</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- JUnit 5 Engine (Required for running tests) -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>5.8.0</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- Assertions for JUnit 5 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
@@ -42,7 +51,6 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
 
     <!-- Build Configuration -->
     <build>
@@ -53,8 +61,22 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <source>21</source> <!-- Java version -->
-                    <target>21</target> <!-- Java version -->
+                    <source>24</source> <!-- Java version -->
+                    <target>24</target><!-- Java version -->
+                </configuration>
+            </plugin>
+
+            <!-- JAR Plugin (With Main-Class in Manifest) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Main-Class>com.example.Main</Main-Class> <!-- Replace with your actual main class -->
+                        </manifestEntries>
+                    </archive>
                 </configuration>
             </plugin>
 
@@ -63,6 +85,24 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.2</version>
+            </plugin>
+
+            <!-- JavaFX Maven Plugin (Handle Execution) -->
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <executions>
+                    <execution>
+                        <id>default-cli</id>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>com.example.Main</mainClass> <!-- Your main class for JavaFX -->
+                </configuration>
             </plugin>
         </plugins>
     </build>

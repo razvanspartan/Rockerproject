@@ -5,6 +5,9 @@ import com.example.models.Celestials.Planet;
 import com.example.models.Rocket;
 import com.example.parsers.ParsePlanetFile;
 import com.example.parsers.ParseRocketFile;
+import com.example.view.App;
+import javafx.application.Application;
+import javafx.stage.Stage;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -15,16 +18,17 @@ import static com.example.CONSTANTS.Constants.DAYS_IN_A_YEAR;
 
 public class Main {
     public static void main(String[] args) {
-        Map<String, Planet> planetData = new HashMap<String, Planet>();
+        Application.launch(App.class, args);
+        /*Map<String, Planet> planetData = new HashMap<String, Planet>();
         List<Planet> planets = new ArrayList<Planet>();
 
         ServiceForCalculations service = new ServiceForCalculations();
         Rocket rocket = new Rocket(0, 0);
         ParsePlanetFile parserForPlanets = new ParsePlanetFile();
         ParseRocketFile parserForRocket = new ParseRocketFile();
-        parserForPlanets.parseFilePlanet("/home/razvanspartan/IdeaProjects/Rocketproject/src/data/input/Planetary_Data.txt", planetData);
-        parserForPlanets.parseFileSolarSystem("/home/razvanspartan/IdeaProjects/Rocketproject/src/data/input/Solar_System_Data.txt", planetData, planets);
-        parserForRocket.parseRocketFile("/home/razvanspartan/IdeaProjects/Rocketproject/src/data/input/Rocket_Data.txt", rocket);
+        parserForPlanets.parseFilePlanet("/home/razvanspartan/IdeaProjects/Rocketproject/src/main/java/com/example/data/input/Planetary_Data.txt", planetData);
+        parserForPlanets.parseFileSolarSystem("/home/razvanspartan/IdeaProjects/Rocketproject/src/main/java/com/example/data/input/Solar_System_Data.txt", planetData, planets);
+        parserForRocket.parseRocketFile("/home/razvanspartan/IdeaProjects/Rocketproject/src/main/java/com/example/data/input/Rocket_Data.txt", rocket);
 
         System.out.println(planetData.get("Earth").getAngularPosition(BigDecimal.valueOf(0)));
         System.out.println(planetData.get("Earth").getAngularPosition(BigDecimal.valueOf(0)));
@@ -40,13 +44,13 @@ public class Main {
         BigDecimal cruisingSpeed = service.getCruisingSpeed(earth, mars);
         System.out.println("\n Cruising Speed: " + cruisingSpeed + " m/s");
 
-        BigDecimal cruisingDistance = service.getCruisingDistance(earth, mars, rocket);
+        BigDecimal cruisingDistance = service.getCruisingDistance(earth, mars, rocket, null);
         System.out.println("Cruising Distance: " + cruisingDistance + " meters");
 
-        BigDecimal journeyTimeAtCruising = service.getJourneyTimeAtCruisingVelocity(earth, mars, rocket);
+        BigDecimal journeyTimeAtCruising = service.getJourneyTimeAtCruisingVelocity(earth, mars, rocket, null);
         System.out.println("Journey Time at Cruising Velocity: " + journeyTimeAtCruising + " seconds");
 
-        BigDecimal totalJourneyTime = service.getTotalJourneyTime(earth, mars, rocket);
+        BigDecimal totalJourneyTime = service.getTotalJourneyTime(earth, mars, rocket, null);
         System.out.println("Total Journey Time: " + totalJourneyTime + " seconds");
 
         System.out.println("Total Journey Time (formatted): " + service.toStringGetTime(service.getTimeinDaysMinutesSeconds(totalJourneyTime)));
@@ -63,6 +67,11 @@ public class Main {
         System.out.println(service.closestTimeToAlignAfterSomeTime(earth, mars, BigDecimal.valueOf(100)));
         System.out.println(service.closestTimeToAlignAfterSomeTime(planetData.get("Earth"), planetData.get("Mars"), BigDecimal.valueOf(100)));
         System.out.println(service.collisionCheckerSolarSystemNotMoving(planetData.get("Mercury"), planetData.get("Pluto"), service.closestTimeToAlignAfterSomeTime(planetData.get("Mercury"), planetData.get("Pluto"), BigDecimal.valueOf(100).multiply(DAYS_IN_A_YEAR)), planets));
+        System.out.println(earth.getEscapeVelocity());
+        System.out.println(earth.getPeriod());
+        System.out.println(earth.getAngularVelocity());
+        App application = new App();
+        App.launch();*/
 
 
             //System.out.println("STOPPP!!! \n \n");
@@ -72,6 +81,6 @@ public class Main {
 
 
     }// /home/razvanspartan/IdeaProjects/Rocketproject/src/data/input/Planetary_Data.txt
-        // "/home/razvanspartan/IdeaProjects/Rocketproject/src/data/input/Solar_System_Data.txt"
+    // "/home/razvanspartan/IdeaProjects/Rocketproject/src/data/input/Solar_System_Data.txt"
 
 }

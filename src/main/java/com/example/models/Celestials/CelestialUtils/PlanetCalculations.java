@@ -11,10 +11,10 @@ import static com.example.CONSTANTS.Constants.VALUE_OF_PI;
 
 public class PlanetCalculations {
     public BigDecimal getEscapeVelocity(BigDecimal mass, BigDecimal diameter) {
-        BigDecimal radius = diameter.divide(BigDecimal.valueOf(2), MathContext.DECIMAL128);
+        BigDecimal radius = getRadius(diameter);
         BigDecimal numerator = GRAVITATIONAL_CONSTANT.multiply(mass).multiply(BigDecimal.valueOf(2));
         BigDecimal escapeVelo = numerator.divide(radius, MathContext.DECIMAL128);
-        escapeVelo = new BigDecimal(Math.sqrt(escapeVelo.doubleValue()));
+        escapeVelo = BigDecimal.valueOf(Math.sqrt(escapeVelo.doubleValue()));
         return escapeVelo.setScale(0, RoundingMode.HALF_UP);
     }
     public BigDecimal getAngularVelocity(BigDecimal period) {
