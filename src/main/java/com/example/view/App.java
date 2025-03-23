@@ -1,4 +1,5 @@
 package com.example.view;
+import com.example.Service.ServiceForCalculations;
 import com.example.models.Celestials.Planet;
 import com.example.models.Rocket;
 import com.example.parsers.ParsePlanetFile;
@@ -24,6 +25,9 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +45,7 @@ public class App extends Application{
     private Rocket rocket = new Rocket(0,0);
     private ParsePlanetFile parserForPlanets = new ParsePlanetFile();
     private ParseRocketFile parserForRocket = new ParseRocketFile();
+    private ServiceForCalculations service = new ServiceForCalculations();
     public void loadData(String planetPath, String solarSystemPath, String rocketPath) throws Exception{
         parserForPlanets.parseFilePlanet(planetPath, planetData);
         parserForPlanets.parseFileSolarSystem(solarSystemPath, planetData, planets);
@@ -67,6 +72,156 @@ public class App extends Application{
         Scene sceneInputFiles = createSceneInputFiles(primaryStage);
         primaryStage.setScene(sceneInputFiles);
         primaryStage.show();
+    }
+    public Scene createSceneStage3(Stage stage){
+        VBox root = new VBox(20);
+        HBox aiImageAndText = aiImageAndTextModular("\"Stage 3 initiates a simulated spaceflight between two planets, assuming perfect alignment and no external interference. Enter your departure and destination planets, then confirm to begin the calculation.\"");
+        root.getChildren().add(aiImageAndText);
+        TextField departurePlanet = new TextField();
+        departurePlanet.setPromptText("Enter departure planet..");
+        TextField destinationPlanet = new TextField();
+        destinationPlanet.setPromptText("Enter destination planet..");
+        Button submitButton  = new Button("Submit");
+        Text informationText = new Text();
+        informationText.setFont(Font.font("Arial", 16));
+        Button goBackButton = new Button("Go back");
+        submitButton.setOnAction(e -> {
+            Planet departPlanet = planetData.get(departurePlanet.getText());
+            Planet destPlanet = planetData.get(destinationPlanet.getText());
+            BigDecimal cruisingSpeed = service.getCruisingSpeed(departPlanet, destPlanet);
+
+            BigDecimal timeToCruisingVelocity = rocket.getTimeToReachEscapeVelocity(cruisingSpeed);
+            BigDecimal distanceAtCruisingVelocity = service.getDistanceFromPlanetAtAccOrDeacc(departPlanet, destPlanet, rocket);
+            BigDecimal journeyTimeAtCruisingSpeed = service.getJourneyTimeAtCruisingVelocity(departPlanet, destPlanet, rocket, cruisingSpeed);
+            BigDecimal distanceBeforeDeceleration = service.getDistanceFromPlanetAtAccOrDeacc(destPlanet, departPlanet, rocket);
+            BigDecimal decelerationTime = rocket.getTimeToReachEscapeVelocity(cruisingSpeed);
+            BigDecimal totalTravelTime = service.getTotalJourneyTime(departPlanet, destPlanet, rocket,  cruisingSpeed);
+            String formattedJourneyTime = service.toStringGetTime(service.getTimeinDaysMinutesSeconds(totalTravelTime));
+
+            informationText.setText(
+                    "Time to reach cruising velocity (the highest escape velocity between the two planets): " + timeToCruisingVelocity.setScale(0, RoundingMode.HALF_UP) + " seconds\n" +
+                            "Distance from departure planet when we reach cruising velocity: " + distanceAtCruisingVelocity.divide(BigDecimal.valueOf(Math.pow(10,3)), MathContext.DECIMAL128).setScale(2, RoundingMode.HALF_UP) + " km\n" +
+                            "Time spent cruising at nominal velocity: " + journeyTimeAtCruisingSpeed.setScale(0, RoundingMode.HALF_UP) + " seconds\n" +
+                            "Distance from destination planet where deceleration begins: " + distanceBeforeDeceleration.divide(BigDecimal.valueOf(Math.pow(10,3)), MathContext.DECIMAL128).setScale(2, RoundingMode.HALF_UP) + " km\n" +
+                            "Time to decelerate to zero: " + decelerationTime.setScale(0, RoundingMode.HALF_UP) + " seconds\n" +
+                            "Total travel time in seconds: " + totalTravelTime.setScale(0, RoundingMode.HALF_UP) + " seconds\n" +
+                            "Total travel time formatted " + formattedJourneyTime
+            );
+        });
+        goBackButton.setOnAction(e ->{
+            primaryStage.setScene(createSceneTestSelection(primaryStage));
+        });
+        root.getChildren().addAll(departurePlanet, destinationPlanet, submitButton, informationText, goBackButton);
+
+        return new Scene(root, 1000, 800);
+
+
+    }
+    public Scene createSceneStage2(Stage stage){
+        VBox root = new VBox(20);
+        HBox aiImageAndText = aiImageAndTextModular("\"Test 2 consists of testing our spaceship's capability to reach escape velocity. We want our ship to be able to compute the time to reach this speed and the distance we travelled to reach this velocity.\"");
+        root.getChildren().add(aiImageAndText);
+        HBox buttons =  new HBox(20);
+        Button buttonMercury = new Button("Mercury");
+        Button buttonVenus = new Button("Venus");
+        Button buttonEarth = new Button("Earth");
+        Button buttonMars = new Button("Mars");
+        Button buttonJupiter = new Button("Jupiter");
+        Button buttonSaturn = new Button("Saturn");
+        Button buttonUranus = new Button("Uranus");
+        Button buttonNeptune = new Button("Neptune");
+        Button buttonPluto = new Button("Pluto");
+        Text informationText = new Text();
+        Button buttonGoBack = new Button("Go back");
+        Button[] planetButtons = {buttonMercury, buttonVenus, buttonEarth, buttonMars,
+                buttonJupiter, buttonSaturn, buttonUranus, buttonNeptune, buttonPluto};
+        informationText.setFont(Font.font("Arial", 24));
+        buttonGoBack.setOnAction(e -> {
+            primaryStage.setScene(createSceneTestSelection(primaryStage));
+        });
+        for (Button button : planetButtons) {
+            button.setOnAction(e -> {
+                String planetName = button.getText();
+                informationText.setText("Time to reach escape velocity from " + planetName + " with our rocket: "
+                        + rocket.getTimeToReachEscapeVelocity(planetData.get(planetName).getEscapeVelocity()).setScale(0, RoundingMode.HALF_UP)+ " seconds" + "\n"
+                        + "The distance travelled to reach escape velocity: "
+                        + rocket.getDistanceToReachEscapeVelocity(planetData.get(planetName).getEscapeVelocity())
+                        .divide(BigDecimal.valueOf(Math.pow(10,3)), MathContext.DECIMAL128).setScale(2, RoundingMode.HALF_UP) + " km");
+            });
+        }
+        buttons.getChildren().addAll(planetButtons);
+        root.getChildren().addAll(buttons, informationText, buttonGoBack);
+        return new Scene(root, 1000, 800);
+    }
+    public Scene createSceneStage1(Stage stage){
+        VBox root = new VBox(20);
+        HBox aiImageAndText = aiImageAndTextModular("\"Welcome, Captain. For our first test, we will verify the ship's ability to accurately calculate the escape velocity of the selected planet. Please, choose the planet from the list, and the ship will handle the computations with precision.\"");
+        root.getChildren().add(aiImageAndText);
+        HBox buttons =  new HBox(20);
+        Button buttonMercury = new Button("Mercury");
+        Button buttonVenus = new Button("Venus");
+        Button buttonEarth = new Button("Earth");
+        Button buttonMars = new Button("Mars");
+        Button buttonJupiter = new Button("Jupiter");
+        Button buttonSaturn = new Button("Saturn");
+        Button buttonUranus = new Button("Uranus");
+        Button buttonNeptune = new Button("Neptune");
+        Button buttonPluto = new Button("Pluto");
+        Text escapeVelocityText = new Text();
+        escapeVelocityText.setFont(Font.font("Arial", 40));
+        buttons.getChildren().addAll(buttonMercury, buttonVenus, buttonEarth, buttonMars, buttonJupiter, buttonSaturn, buttonUranus, buttonNeptune, buttonPluto);
+        Button buttonGoBack = new Button("Go back");
+        buttonGoBack.setOnAction(e -> {
+            primaryStage.setScene(createSceneTestSelection(primaryStage));
+        });
+        root.getChildren().addAll(buttons, escapeVelocityText, buttonGoBack);
+
+        buttonMercury.setOnAction(e -> {
+            escapeVelocityText.setText(String.valueOf( "Escape Velocity of Mercury: " + planetData.get(buttonMercury.getText()).getEscapeVelocity()
+                    .divide(BigDecimal.valueOf(Math.pow(10,3)))
+                    .setScale(1, BigDecimal.ROUND_HALF_UP)) + " km/s");
+        });
+        buttonVenus.setOnAction(e -> {
+            escapeVelocityText.setText(String.valueOf("Escape Velocity of Venus: " + planetData.get(buttonVenus.getText()).getEscapeVelocity()
+                    .divide(BigDecimal.valueOf(Math.pow(10,3)))
+                    .setScale(1, BigDecimal.ROUND_HALF_UP)) + " km/s");
+        });
+        buttonEarth.setOnAction(e -> {
+            escapeVelocityText.setText(String.valueOf("Escape Velocity of Earth: " +planetData.get(buttonEarth.getText()).getEscapeVelocity()
+                    .divide(BigDecimal.valueOf(Math.pow(10,3)), MathContext.DECIMAL128)
+                    .setScale(1, BigDecimal.ROUND_HALF_UP))+ " km/s");
+        });
+        buttonMars.setOnAction(e -> {
+            escapeVelocityText.setText(String.valueOf("Escape Velocity of Mars: " +planetData.get(buttonMars.getText()).getEscapeVelocity()
+                    .divide(BigDecimal.valueOf(Math.pow(10,3)), MathContext.DECIMAL128)
+                    .setScale(1, BigDecimal.ROUND_HALF_UP)) + " km/s");
+        });
+        buttonJupiter.setOnAction(e -> {
+            escapeVelocityText.setText(String.valueOf("Escape Velocity of Jupiter: " + planetData.get(buttonJupiter.getText()).getEscapeVelocity()
+                    .divide(BigDecimal.valueOf(Math.pow(10,3)), MathContext.DECIMAL128)
+                    .setScale(1, BigDecimal.ROUND_HALF_UP)) + " km/s");
+        });
+        buttonSaturn.setOnAction(e -> {
+            escapeVelocityText.setText(String.valueOf("Escape Velocity of Saturn: " +planetData.get(buttonSaturn.getText()).getEscapeVelocity()
+                    .divide(BigDecimal.valueOf(Math.pow(10,3)), MathContext.DECIMAL128)
+                    .setScale(1, BigDecimal.ROUND_HALF_UP)) + " km/s");
+        });
+        buttonUranus.setOnAction(e -> {
+            escapeVelocityText.setText(String.valueOf("Escape Velocity of Uranus: " +planetData.get(buttonUranus.getText()).getEscapeVelocity()
+                    .divide(BigDecimal.valueOf(Math.pow(10,3)), MathContext.DECIMAL128)
+                    .setScale(1, BigDecimal.ROUND_HALF_UP)) + " km/s");
+        });
+        buttonNeptune.setOnAction(e -> {
+            escapeVelocityText.setText(String.valueOf("Escape Velocity of Neptune: " +planetData.get(buttonNeptune.getText()).getEscapeVelocity()
+                    .divide(BigDecimal.valueOf(Math.pow(10,3)), MathContext.DECIMAL128)
+                    .setScale(1, BigDecimal.ROUND_HALF_UP))+ " km/s");
+        });
+        buttonPluto.setOnAction(e -> {
+            escapeVelocityText.setText(String.valueOf("Escape Velocity of Mercury: " +planetData.get(buttonPluto.getText()).getEscapeVelocity()
+                    .divide(BigDecimal.valueOf(Math.pow(10,3)), MathContext.DECIMAL128)
+                    .setScale(1, BigDecimal.ROUND_HALF_UP))+ " km/s");
+        });
+        return new Scene(root, 1000, 800);
     }
     public HBox aiImageAndTextModular(String textToDisplay){
         HBox aiImageAndText = new HBox(20);
@@ -103,7 +258,15 @@ public class App extends Application{
         stage5Button.setPrefSize(100, 50);
         Button launchButton = new Button("LAUNCH");
         launchButton.setPrefSize(100, 50);
-
+        stage1Button.setOnAction(e -> {
+            primaryStage.setScene(createSceneStage1(primaryStage));
+        });
+        stage2Button.setOnAction(e ->{
+            primaryStage.setScene(createSceneStage2(primaryStage));
+        });
+        stage3Button.setOnAction(e ->{
+            primaryStage.setScene(createSceneStage3(primaryStage));
+        });
         buttons.getChildren().addAll(stage1Button,stage2Button,stage3Button,stage4Button,stage5Button, launchButton);
         root.getChildren().add(buttons);
         return new Scene(root, 1000, 800);
