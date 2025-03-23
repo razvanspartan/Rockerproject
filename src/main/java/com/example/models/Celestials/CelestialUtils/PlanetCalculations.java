@@ -29,7 +29,7 @@ public class PlanetCalculations {
     public BigDecimal getAngularPosition(BigDecimal period, BigDecimal time){
         BigDecimal angularVelocity = getAngularVelocity(period);
         BigDecimal angularPos = angularVelocity.multiply(time).setScale(15, RoundingMode.HALF_UP);
-        angularPos = angularPos.remainder(BigDecimal.valueOf(Math.PI * 2)).setScale(2, RoundingMode.HALF_UP);
+        angularPos = angularPos.remainder(BigDecimal.valueOf(Math.PI * 2));
         return angularPos;
     }
     public List<Double> getCoordinates(BigDecimal angularPosition, BigDecimal orbitalRadius){

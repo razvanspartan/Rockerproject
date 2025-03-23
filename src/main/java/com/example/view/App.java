@@ -73,6 +73,54 @@ public class App extends Application{
         primaryStage.setScene(sceneInputFiles);
         primaryStage.show();
     }
+    public Scene createSceneStage4(Stage stage){
+        VBox root = new VBox(20);
+        HBox aiImageAndText = aiImageAndTextModular("\"To navigate between planets, our system must calculate their precise positions at any given time. Ensuring the ship's computer can determine each planet's angular position is essential for a successful journey. Please input a time in days and choose which planet you want to find the angular position of.\"");
+        root.getChildren().add(aiImageAndText);
+        HBox buttons =  new HBox(20);
+        Button buttonMercury = new Button("Mercury");
+        Button buttonVenus = new Button("Venus");
+        Button buttonEarth = new Button("Earth");
+        Button buttonMars = new Button("Mars");
+        Button buttonJupiter = new Button("Jupiter");
+        Button buttonSaturn = new Button("Saturn");
+        Button buttonUranus = new Button("Uranus");
+        Button buttonNeptune = new Button("Neptune");
+        Button buttonPluto = new Button("Pluto");
+        TextField timeField = new TextField();
+        timeField.setPromptText("Time in days..");
+        Text informationText = new Text();
+        Button buttonGoBack = new Button("Go back");
+        Button[] planetButtons = {buttonMercury, buttonVenus, buttonEarth, buttonMars,
+                buttonJupiter, buttonSaturn, buttonUranus, buttonNeptune, buttonPluto};
+        informationText.setFont(Font.font("Arial", 24));
+        buttonGoBack.setOnAction(e -> {
+            primaryStage.setScene(createSceneTestSelection(primaryStage));
+        });
+        for (Button button : planetButtons) {
+            button.setOnAction(e -> {
+                try{
+                    try {
+                        Double.parseDouble(timeField.getText());
+                    }catch (Exception ex){
+                        throw new Exception("Time must be a number!");
+                    }
+                    BigDecimal time =  new BigDecimal(timeField.getText());
+                    BigDecimal angularPositionRadians = planetData.get(button.getText()).getAngularPosition(time);
+                    BigDecimal angularPositionDegrees = service.convertRadiansToDegrees(angularPositionRadians);
+                    informationText.setText("Angular position: " + angularPositionRadians.setScale(2, RoundingMode.HALF_UP) + " radians" + " or " + angularPositionDegrees.setScale(2, RoundingMode.HALF_UP) + " degrees");
+                }catch (Exception ex){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setContentText(ex.getMessage());
+                    alert.showAndWait();
+                }
+            });
+        }
+        buttons.getChildren().addAll(planetButtons);
+        root.getChildren().addAll(timeField, buttons, informationText, buttonGoBack);
+        return new Scene(root, 1000, 800);
+    }
     public Scene createSceneStage3(Stage stage){
         VBox root = new VBox(20);
         HBox aiImageAndText = aiImageAndTextModular("\"Stage 3 initiates a simulated spaceflight between two planets, assuming perfect alignment and no external interference. Enter your departure and destination planets, then confirm to begin the calculation.\"");
@@ -86,27 +134,34 @@ public class App extends Application{
         informationText.setFont(Font.font("Arial", 16));
         Button goBackButton = new Button("Go back");
         submitButton.setOnAction(e -> {
-            Planet departPlanet = planetData.get(departurePlanet.getText());
-            Planet destPlanet = planetData.get(destinationPlanet.getText());
-            BigDecimal cruisingSpeed = service.getCruisingSpeed(departPlanet, destPlanet);
+            try {
+                Planet departPlanet = planetData.get(departurePlanet.getText());
+                Planet destPlanet = planetData.get(destinationPlanet.getText());
+                BigDecimal cruisingSpeed = service.getCruisingSpeed(departPlanet, destPlanet);
 
-            BigDecimal timeToCruisingVelocity = rocket.getTimeToReachEscapeVelocity(cruisingSpeed);
-            BigDecimal distanceAtCruisingVelocity = service.getDistanceFromPlanetAtAccOrDeacc(departPlanet, destPlanet, rocket);
-            BigDecimal journeyTimeAtCruisingSpeed = service.getJourneyTimeAtCruisingVelocity(departPlanet, destPlanet, rocket, cruisingSpeed);
-            BigDecimal distanceBeforeDeceleration = service.getDistanceFromPlanetAtAccOrDeacc(destPlanet, departPlanet, rocket);
-            BigDecimal decelerationTime = rocket.getTimeToReachEscapeVelocity(cruisingSpeed);
-            BigDecimal totalTravelTime = service.getTotalJourneyTime(departPlanet, destPlanet, rocket,  cruisingSpeed);
-            String formattedJourneyTime = service.toStringGetTime(service.getTimeinDaysMinutesSeconds(totalTravelTime));
+                BigDecimal timeToCruisingVelocity = rocket.getTimeToReachEscapeVelocity(cruisingSpeed);
+                BigDecimal distanceAtCruisingVelocity = service.getDistanceFromPlanetAtAccOrDeacc(departPlanet, destPlanet, rocket);
+                BigDecimal journeyTimeAtCruisingSpeed = service.getJourneyTimeAtCruisingVelocity(departPlanet, destPlanet, rocket, cruisingSpeed);
+                BigDecimal distanceBeforeDeceleration = service.getDistanceFromPlanetAtAccOrDeacc(destPlanet, departPlanet, rocket);
+                BigDecimal decelerationTime = rocket.getTimeToReachEscapeVelocity(cruisingSpeed);
+                BigDecimal totalTravelTime = service.getTotalJourneyTime(departPlanet, destPlanet, rocket,  cruisingSpeed);
+                String formattedJourneyTime = service.toStringGetTime(service.getTimeinDaysMinutesSeconds(totalTravelTime));
 
-            informationText.setText(
-                    "Time to reach cruising velocity (the highest escape velocity between the two planets): " + timeToCruisingVelocity.setScale(0, RoundingMode.HALF_UP) + " seconds\n" +
-                            "Distance from departure planet when we reach cruising velocity: " + distanceAtCruisingVelocity.divide(BigDecimal.valueOf(Math.pow(10,3)), MathContext.DECIMAL128).setScale(2, RoundingMode.HALF_UP) + " km\n" +
-                            "Time spent cruising at nominal velocity: " + journeyTimeAtCruisingSpeed.setScale(0, RoundingMode.HALF_UP) + " seconds\n" +
-                            "Distance from destination planet where deceleration begins: " + distanceBeforeDeceleration.divide(BigDecimal.valueOf(Math.pow(10,3)), MathContext.DECIMAL128).setScale(2, RoundingMode.HALF_UP) + " km\n" +
-                            "Time to decelerate to zero: " + decelerationTime.setScale(0, RoundingMode.HALF_UP) + " seconds\n" +
-                            "Total travel time in seconds: " + totalTravelTime.setScale(0, RoundingMode.HALF_UP) + " seconds\n" +
-                            "Total travel time formatted " + formattedJourneyTime
-            );
+                informationText.setText(
+                        "Time to reach cruising velocity (the highest escape velocity between the two planets): " + timeToCruisingVelocity.setScale(0, RoundingMode.HALF_UP) + " seconds\n" +
+                                "Distance from departure planet when we reach cruising velocity: " + distanceAtCruisingVelocity.divide(BigDecimal.valueOf(Math.pow(10,3)), MathContext.DECIMAL128).setScale(2, RoundingMode.HALF_UP) + " km\n" +
+                                "Time spent cruising at nominal velocity: " + journeyTimeAtCruisingSpeed.setScale(0, RoundingMode.HALF_UP) + " seconds\n" +
+                                "Distance from destination planet where deceleration begins: " + distanceBeforeDeceleration.divide(BigDecimal.valueOf(Math.pow(10,3)), MathContext.DECIMAL128).setScale(2, RoundingMode.HALF_UP) + " km\n" +
+                                "Time to decelerate to zero: " + decelerationTime.setScale(0, RoundingMode.HALF_UP) + " seconds\n" +
+                                "Total travel time in seconds: " + totalTravelTime.setScale(0, RoundingMode.HALF_UP) + " seconds\n" +
+                                "Total travel time formatted " + formattedJourneyTime
+                );
+            } catch (Exception ex) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setContentText(ex.getMessage());
+                alert.showAndWait();
+            }
         });
         goBackButton.setOnAction(e ->{
             primaryStage.setScene(createSceneTestSelection(primaryStage));
@@ -266,6 +321,9 @@ public class App extends Application{
         });
         stage3Button.setOnAction(e ->{
             primaryStage.setScene(createSceneStage3(primaryStage));
+        });
+        stage4Button.setOnAction(e ->{
+            primaryStage.setScene(createSceneStage4(primaryStage));
         });
         buttons.getChildren().addAll(stage1Button,stage2Button,stage3Button,stage4Button,stage5Button, launchButton);
         root.getChildren().add(buttons);
