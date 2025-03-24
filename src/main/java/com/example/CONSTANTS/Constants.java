@@ -12,4 +12,5 @@ public class Constants {
     public static final BigDecimal VALUE_OF_PI = BigDecimal.valueOf(Math.PI);
     public static final BigDecimal DAYS_IN_A_YEAR = BigDecimal.valueOf(365);
     public static final BigDecimal STARTING_YEAR = BigDecimal.valueOf(100);
+    public static final BigDecimal SECONDS_IN_A_YEAR = BigDecimal.valueOf(31536000);
 }

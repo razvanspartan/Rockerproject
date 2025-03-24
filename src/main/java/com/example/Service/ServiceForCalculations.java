@@ -12,7 +12,7 @@ import java.util.List;
 import static com.example.CONSTANTS.Constants.*;
 
 public class ServiceForCalculations {
-
+    //time is in days
     public boolean willCollide(Planet startingPlanet, Planet currentPlanet, Planet destinationPlanet, BigDecimal time){
         List<Double> startingPlanetCoords = startingPlanet.getCoordinates(time);
         List<Double> destinationPlanetCoords = destinationPlanet.getCoordinates(time);
@@ -22,7 +22,7 @@ public class ServiceForCalculations {
                     + startingPlanetCoords.get(1) * destinationPlanetCoords.get(0) - destinationPlanetCoords.get(1)*startingPlanetCoords.get(0));
             double denominator = Math.sqrt(Math.pow(destinationPlanetCoords.get(1) - startingPlanetCoords.get(1), 2) + Math.pow(destinationPlanetCoords.get(0) - startingPlanetCoords.get(0), 2));
         return distance/denominator <= currentPlanet.getRadius().doubleValue();
-    }
+    }//time is the year at which is started in days
     public boolean collisionCheckerSolarSystemNotMoving(Planet startingPlanet, Planet destinationPlanet,BigDecimal time, List<Planet> planetList){
         if(planetList.indexOf(startingPlanet) > planetList.indexOf(destinationPlanet)){
             collisionCheckerSolarSystemNotMoving(destinationPlanet, startingPlanet, time, planetList);
@@ -34,13 +34,12 @@ public class ServiceForCalculations {
             }
         }
         return true;
-    }
+    }//ttime is the year at which is started in days
     public boolean collisionCheckerSolarSystemMoving (Planet startingPlanet, Planet destinationPlanet,BigDecimal time, List<Planet> planetList, Rocket rocket){
         if(planetList.indexOf(startingPlanet) > planetList.indexOf(destinationPlanet)){
             return collisionCheckerSolarSystemNotMoving(destinationPlanet, startingPlanet, time, planetList);
         }
         for(int i = planetList.indexOf(startingPlanet)+1; i < planetList.indexOf(destinationPlanet); i++){
-            System.out.println(planetList.get(i).getName() + " " + willCollide(startingPlanet, planetList.get(i), destinationPlanet, time));
             if(willCollide(startingPlanet, planetList.get(i), destinationPlanet,
                     (getJourneyTimeAtCruisingVelocity(startingPlanet, destinationPlanet, rocket, getCruisingSpeed(startingPlanet,destinationPlanet)).add(rocket.getTimeToReachEscapeVelocity(getCruisingSpeed(startingPlanet, destinationPlanet))
                             .divide(SECONDS_IN_A_DAY, MathContext.DECIMAL128)
@@ -57,10 +56,11 @@ public class ServiceForCalculations {
         return startingPlanetPeriod.multiply(destinationPlanetPeriod)
                 .divide((startingPlanetPeriod.subtract(destinationPlanetPeriod)).abs(), MathContext.DECIMAL128).divide(DAYS_IN_A_YEAR, MathContext.DECIMAL128);
     }
-
+    //takes years returns nr of aligns
     public BigDecimal numberOfAllingmentsByATime(Planet startingPlanet, Planet destinationPlanet,  BigDecimal time){
         return time.divide(timeToAlign(startingPlanet, destinationPlanet), MathContext.DECIMAL128);
     }
+    //returns years
     public BigDecimal closestTimeToAlignAfterSomeTime(Planet startingPlanet, Planet destinationPlanet, BigDecimal time) {
         BigDecimal timeToAlign = timeToAlign(startingPlanet, destinationPlanet);
 

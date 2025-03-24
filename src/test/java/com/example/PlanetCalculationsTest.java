@@ -41,11 +41,12 @@ public class PlanetCalculationsTest {
         Assertions.assertEquals(expectedEscapeVelocityEarth, actualEscapeVelocityEarth);
         Assertions.assertEquals(expectedEscapeVelocityNeptune, actualEscapeVelocityNeptune);
     }
-   /* @Test
+   /*@Test
     void getAngularVelocity(){
-        BigDecimal expectedAngularVelocity = BigDecimal.valueOf(1.99);
+        BigDecimal expectedAngularVelocity = BigDecimal.valueOf(0.00);
         BigDecimal actualAngularVelocity = earth.getAngularVelocity().setScale(2, RoundingMode.HALF_UP);
         Assertions.assertEquals(expectedAngularVelocity,actualAngularVelocity);
     }*/
+
 
 }
