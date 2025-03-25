@@ -50,6 +50,20 @@ public class ServiceForCalculations {
         return true;
 
     }
+    //this returns days
+    public BigDecimal optimalLaunchTimeSystemMoving(Planet startingPlanet, Planet destinationPlanet, Rocket rocket, BigDecimal timeAtStartOfSimulationInDays){
+        BigDecimal timeFromStartToDestination = getTotalJourneyTime(startingPlanet,destinationPlanet,rocket, getCruisingSpeed(startingPlanet,destinationPlanet)).divide(SECONDS_IN_A_DAY, MathContext.DECIMAL128);
+        for(int time = 0; time <= 10*365; time++){
+            BigDecimal timeAtLaunch = timeAtStartOfSimulationInDays.add(BigDecimal.valueOf(time));
+            BigDecimal timeAtArrival = timeAtLaunch.add(timeFromStartToDestination);
+            System.out.println("Inside optimal Launch method " + timeAtLaunch + " " + timeAtArrival);
+            System.out.println("start planet and other in optimal Launch " + startingPlanet.getAngularPosition(timeAtLaunch).setScale(0,RoundingMode.HALF_UP).equals(destinationPlanet.getAngularPosition(timeAtArrival).setScale(0, RoundingMode.HALF_UP)));
+            if(startingPlanet.getAngularPosition(timeAtLaunch).setScale(0,RoundingMode.HALF_UP).equals(destinationPlanet.getAngularPosition(timeAtArrival).setScale(0, RoundingMode.HALF_UP))){
+                return timeAtLaunch;
+            }
+        }
+        return BigDecimal.valueOf(-1);
+    }
     public BigDecimal timeToAlign(Planet startingPlanet, Planet destinationPlanet){
         BigDecimal startingPlanetPeriod = BigDecimal.valueOf(startingPlanet.getPeriod());
         BigDecimal destinationPlanetPeriod = BigDecimal.valueOf(destinationPlanet.getPeriod());
@@ -79,7 +93,9 @@ public class ServiceForCalculations {
         }
     }
     public BigDecimal convertRadiansToDegrees(BigDecimal radians){
-        return radians.multiply(BigDecimal.valueOf(180/Math.PI));
+        BigDecimal pi = new BigDecimal(Math.PI);
+        BigDecimal degrees = BigDecimal.valueOf(180).divide(pi, 10, BigDecimal.ROUND_HALF_UP);
+        return radians.multiply(degrees);
     }
     public String toStringGetTime(List<Integer> values){
         return String.valueOf(values.get(0)) + " Days" + " " + String.valueOf(values.get(1)) + " Hours" + " " + String.valueOf(values.get(2)) + " Minutes" +" "+ values.get(3) + " Seconds";

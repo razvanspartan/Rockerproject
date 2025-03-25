@@ -146,18 +146,12 @@ public class App extends Application{
                 Planet destPlanet = planetData.get(destinationPlanetFinal);
                 boolean willWeLaunch = false;
                 BigDecimal cruisingVelo = service.getCruisingSpeed(departPlanet, destPlanet);
-                BigDecimal timeToLaunch = service.closestTimeToAlignAfterSomeTime(departPlanet, destPlanet, BigDecimal.valueOf(100));
+                BigDecimal timeToLaunch = service.optimalLaunchTimeSystemMoving(departPlanet, destPlanet, rocket,  BigDecimal.valueOf(100).multiply(DAYS_IN_A_YEAR));
                 while(!willWeLaunch && timeToLaunch.compareTo(BigDecimal.valueOf(-1)) > 0){
-                    System.out.println("Current timeToLaunch: " + timeToLaunch);
-                    System.out.println(timeToLaunch.subtract((service.getTotalJourneyTime(departPlanet,destPlanet,rocket, cruisingVelo).divide(SECONDS_IN_A_YEAR, MathContext.DECIMAL128))).compareTo(BigDecimal.valueOf(100)) >= 0);
-                    System.out.println(timeToLaunch.subtract((service.getTotalJourneyTime(departPlanet,destPlanet,rocket, cruisingVelo).divide(SECONDS_IN_A_YEAR, MathContext.DECIMAL128))));
-                    if(timeToLaunch.compareTo(BigDecimal.valueOf(-1))>0){
-                        if(service.collisionCheckerSolarSystemMoving(departPlanet,destPlanet,timeToLaunch.multiply(DAYS_IN_A_YEAR),planets,rocket) && timeToLaunch.subtract((service.getTotalJourneyTime(departPlanet,destPlanet,rocket, cruisingVelo).divide(SECONDS_IN_A_YEAR, MathContext.DECIMAL128))).compareTo(BigDecimal.valueOf(100)) >= 0){
+                    if(timeToLaunch.compareTo(BigDecimal.valueOf(-1)) > 0){
+                        if(service.collisionCheckerSolarSystemMoving(departPlanet,destPlanet,timeToLaunch,planets,rocket)){
                             willWeLaunch = true;
                             break;
-                        }
-                        else{
-                            timeToLaunch = service.closestTimeToAlignAfterSomeTime(departPlanet, destPlanet, timeToLaunch.add(BigDecimal.ONE));
                         }
                     }
                     else{
@@ -167,7 +161,7 @@ public class App extends Application{
                 if(!willWeLaunch){
                     throw new Exception("No window found");
                 }
-                timeToLaunch = timeToLaunch.subtract((service.getTotalJourneyTime(departPlanet,destPlanet,rocket, cruisingVelo).divide(SECONDS_IN_A_YEAR, MathContext.DECIMAL128)));
+                timeToLaunch = timeToLaunch.divide(DAYS_IN_A_YEAR, MathContext.DECIMAL128).setScale(2, RoundingMode.HALF_UP);
                 BigDecimal cruisingSpeed = service.getCruisingSpeed(departPlanet, destPlanet);
 
                 BigDecimal timeToCruisingVelocity = rocket.getTimeToReachEscapeVelocity(cruisingSpeed);
@@ -180,7 +174,7 @@ public class App extends Application{
 
                 informationText.setText(
                         departPlanet.getName() + " traveling to " + destPlanet.getName() + "\n" +
-                                "Our first window of opportunity is: " + service.closestTimeToAlignAfterSomeTime(departPlanet, destPlanet, BigDecimal.valueOf(100)).setScale(2,RoundingMode.HALF_UP) + " our actual window of opportunity is: " + timeToLaunch.setScale(2, RoundingMode.HALF_UP) + "\n"
+                                "Our first window of opportunity is: " + timeToLaunch.setScale(2, RoundingMode.HALF_UP) + "\n"
                                 + "Time to reach cruising velocity (the highest escape velocity between the two planets): " + timeToCruisingVelocity.setScale(0, RoundingMode.HALF_UP) + " seconds\n" +
                                 "Distance from departure planet when we reach cruising velocity: " + distanceAtCruisingVelocity.divide(BigDecimal.valueOf(Math.pow(10,3)), MathContext.DECIMAL128).setScale(2, RoundingMode.HALF_UP) + " km\n" +
                                 "Time spent cruising at nominal velocity: " + journeyTimeAtCruisingSpeed.setScale(0, RoundingMode.HALF_UP) + " seconds\n" +
@@ -201,13 +195,15 @@ public class App extends Application{
                 timeToLaunch = timeToLaunch.multiply(DAYS_IN_A_YEAR);
                 if(startIndex != -1) {
                     for (int i = startIndex; i <= stopIndex; i++) {
-                        System.out.println(planets.get(i));
-                        BigDecimal timeAtApproach = service.getJourneyTimeAtCruisingVelocity(departPlanet, planets.get(i), rocket, service.getCruisingSpeed(departPlanet, planets.get(i))).add(rocket.getTimeToReachEscapeVelocity(service.getCruisingSpeed(departPlanet, planets.get(i)))
-                                .divide(SECONDS_IN_A_DAY, MathContext.DECIMAL128)
-                                .setScale(2, RoundingMode.HALF_UP)).add(timeToLaunch);
-                        System.out.println(timeAtApproach.divide(SECONDS_IN_A_DAY, MathContext.DECIMAL128));
+                        System.out.println(planets.get(i).getName());
+                        BigDecimal timeToGetThere = service.getJourneyTimeAtCruisingVelocity(departPlanet, planets.get(i), rocket, service.getCruisingSpeed(departPlanet, planets.get(i))).add(rocket.getTimeToReachEscapeVelocity(service.getCruisingSpeed(departPlanet, planets.get(i)))
+                                .setScale(2, RoundingMode.HALF_UP)).divide(SECONDS_IN_A_DAY, MathContext.DECIMAL128);
+                        BigDecimal timeAtApproach = timeToGetThere.add(timeToLaunch);
+                        System.out.println(timeAtApproach);
                         System.out.println(timeToLaunch);
-                        positionText.append(planets.get(i).getName() + " " + planets.get(i).getAngularPosition(timeToLaunch).setScale(2, RoundingMode.HALF_UP) + " radians" + " or " + service.convertRadiansToDegrees(planets.get(i).getAngularPosition(timeToLaunch)).setScale(2, RoundingMode.HALF_UP) + " degrees; " + "At moment of passing: " + service.convertRadiansToDegrees(planets.get(i).getAngularPosition(timeAtApproach.divide(SECONDS_IN_A_DAY, MathContext.DECIMAL128).add(timeToLaunch))).setScale(2, RoundingMode.HALF_UP) + " degrees\n");
+                        System.out.println( departPlanet.getName() + " is at: " + departPlanet.getAngularPosition(timeAtApproach));
+                        System.out.println(destPlanet.getName() + destPlanet.getAngularPosition(timeAtApproach));
+                        positionText.append(planets.get(i).getName() + " " + planets.get(i).getAngularPosition(timeToLaunch).setScale(2, RoundingMode.HALF_UP) + " radians" + " or " + service.convertRadiansToDegrees(planets.get(i).getAngularPosition(timeToLaunch)).setScale(2, RoundingMode.HALF_UP) + " degrees; " + "At moment of passing: " + service.convertRadiansToDegrees(planets.get(i).getAngularPosition(timeAtApproach)).setScale(2, RoundingMode.HALF_UP) + " degrees\n");
                     }
                 }
                 planetPosition.setText(positionText.toString());
